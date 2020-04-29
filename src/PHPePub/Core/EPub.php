@@ -134,7 +134,6 @@ class EPub
     private $headerDateFormat = "D, d M Y H:i:s T";
     private $docRoot = NULL;
     private $bookRoot = 'OEBPS/';
-    private $EPubMark = TRUE;
     private $generator = '';
     private $log = NULL;
     private $htmlContentHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?> <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"     \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"> <html xmlns=\"http://www.w3.org/1999/xhtml\"> <head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /> <title></title> </head> <body> ";
@@ -225,7 +224,7 @@ class EPub
         unset($this->sourceURL, $this->chapterCount, $this->opf, $this->ncx, $this->isFinalized);
         unset($this->isCoverImageSet, $this->fileList, $this->writingDirection, $this->languageCode);
         unset($this->referencesOrder, $this->dateformat, $this->dateformatShort, $this->headerDateFormat);
-        unset($this->bookRoot, $this->docRoot, $this->EPubMark, $this->generator, $this->log, $this->isLogging);
+        unset($this->bookRoot, $this->docRoot, $this->generator, $this->log, $this->isLogging);
         unset($this->encodeHTML, $this->htmlContentHeader, $this->htmlContentFooter);
         unset($this->buildTOC, $this->tocTitle, $this->tocCSSClass, $this->tocAddReferences);
         unset($this->tocFileName, $this->tocCssFileName, $this->viewport);
@@ -2131,12 +2130,9 @@ class EPub
             $this->ncx->addMetaEntry("dtb:generator", $gen);
         }
 
-        if ($this->EPubMark) {
-            $this->opf->addMeta("generator", "EPub (Version " . self::VERSION . ") by A. Grandt, http://www.phpclasses.org/package/6115 or https://github.com/Grandt/PHPePub/");
-        }
+        $firstChapterNavPoint = reset($this->ncx->chapterList);
+        $firstChapterName = key($this->ncx->chapterList);
 
-        reset($this->ncx->chapterList);
-        list($firstChapterName, $firstChapterNavPoint) = each($this->ncx->chapterList);
         /** @var $firstChapterNavPoint NavPoint */
         $firstChapterFileName = $firstChapterNavPoint->getContentSrc();
         $this->opf->addReference(Reference::TEXT, StringHelper::decodeHtmlEntities($firstChapterName), $firstChapterFileName);
